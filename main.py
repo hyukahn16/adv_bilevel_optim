@@ -8,6 +8,8 @@ import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 from torch.utils.data import RandomSampler, DataLoader
 
+# import cProfile
+
 from models import *
 from defender import beta_adv_train
 from test import pgd_test
@@ -36,7 +38,7 @@ if __name__ == "__main__":
         train_dataset, 
         batch_size=train_batch, 
         shuffle=True, 
-        num_workers=4,
+        num_workers=0,
         )
     
     # Get TEST dataset
@@ -53,10 +55,10 @@ if __name__ == "__main__":
         test_dataset,
         batch_size=100, 
         shuffle=False, 
-        num_workers=4)
+        num_workers=0)
 
     # Define model parameters
-    lr = 0.1 # Default 0.1
+    lr = 0.01 # Default 0.1
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),
@@ -75,6 +77,7 @@ if __name__ == "__main__":
 
     # Train model
     for e in range(train_epoch):
+        print("\nTrain Epoch: {}".format(e))
         model.train()
         beta_adv_train(
             train_loader,
@@ -88,6 +91,7 @@ if __name__ == "__main__":
             )
         
         # Test model
+        print("\n Test Epoch: {}".format(e))
         model.eval()
         pgd_test(model,
                  device, 

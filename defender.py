@@ -1,4 +1,5 @@
 import torch
+from tqdm import tqdm
 
 from attacker import best_targeted_attack
 
@@ -22,8 +23,8 @@ def beta_adv_train(
     """
     model.train()
     iterator = iter(train_loader)
-    for t in range(train_iter):
-        print("Training Iteration {}".format(t))
+    for t in tqdm(range(train_iter)):
+        # print("Training Iteration {}".format(t))
         optimizer.zero_grad()
         data, target = next(iterator)
         data, target = data.to(device), target.to(device)
@@ -34,9 +35,9 @@ def beta_adv_train(
         data, perturbs, target = data[valid], perturbs[valid], target[valid]
         if torch.numel(target) == 0:
             continue
-
         pertInput = torch.add(data, perturbs)
         pertInput = torch.clamp(pertInput, min=0, max=1)
+
         logits = model(pertInput)
         loss = criterion(logits, target)
         loss.backward()
