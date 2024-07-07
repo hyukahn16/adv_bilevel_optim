@@ -2,9 +2,6 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 
-import numpy as np
-from operator import itemgetter
-
 def negative_margin(logits, j, y):
     """Forward feeds perturbed input and calculates margin value.
     Positive value corresponds to a misclassification.
