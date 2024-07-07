@@ -30,7 +30,7 @@ def pgd_test(model, device, test_loader, criterion, pgd_adv):
             _, predicted = adv_outputs.max(1)
             adv_correct += predicted.eq(targets).sum().item()
     
-    benign_acc_log = '\nTotal benign test accuracy: ' + str(100. * benign_correct / total)
+    benign_acc_log = 'Total benign test accuracy: ' + str(100. * benign_correct / total)
     adv_acc_log = 'Total adversarial test accuracy: ' + str(100. * adv_correct / total)
     benign_loss_log = 'Total benign test loss: ' + str(benign_loss)
     adv_loss_log = 'Total adversarial test loss: ' + str(adv_loss)

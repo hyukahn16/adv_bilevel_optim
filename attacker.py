@@ -1,5 +1,7 @@
 import torch
 import torch.optim as optim
+import torch.nn.functional as F
+
 import numpy as np
 from operator import itemgetter
 
@@ -48,63 +50,59 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
     """
     numClasses = 10
     batchSize = x.shape[0]
-    pertClasses = []
+
+    maxMargins = torch.full((batchSize,), float(0)).to(device)
+    maxPerts = torch.zeros(x.shape).to(device)
+
     for j in range(numClasses):
         # algorithm line 3:
-        # Initialize perturbations from uniform distribution
-        # FIXME: x + torch.zeros_like(...)??? Or stay without it
-        # FIXME:: L2Norm(pert) <= eps
-        pertBatch = torch.zeros_like(x).uniform_(-eps, eps)
+        pertBatch = torch.zeros_like(x).uniform_(-eps, eps) * eps
         pertBatch = pertBatch.to(device)
-        # pertBatch.requires_grad_(True)
-        pertClasses.append(pertBatch)
     
         # algorithm line 6, 7
-        optimizer = optim.RMSprop(
+        pertOptim = optim.RMSprop(
             [pertBatch],
             maximize=True,
-            lr=1 # Default 0.01
+            # lr=0.1 # Default 0.01
+            lr = 2/255
             )
+        
         for t in range(atk_iter):
             pertBatch.requires_grad_()
-            optimizer.zero_grad()
+            pertOptim.zero_grad()
 
             pertInput = torch.add(x, pertBatch)
             pertInput = torch.clamp(pertInput, 0, 1)
             logits = model(pertInput)
 
             margins = negative_margin(logits, j, y)
-            avg_margin = torch.mean(margins)
-            avg_margin.backward()
-            print(torch.mean(pertBatch.grad))
-            optimizer.step()
+            avgMargin = torch.mean(margins)
+            avgMargin.backward() # This is the problem
+            pertOptim.step()
 
-            pertBatch = pertBatch.detach()
-            pertBatch = torch.clamp(pertBatch, -eps, eps)
+            with torch.no_grad():
+                F.normalize(pertBatch, p=2, dim=(1,2,3), out=pertBatch) * eps
+            
+                # if t == 0:
+                #     tempM = avgMargin
+                #     temp = pertBatch.data.clone().detach()
+                #     tAvg = torch.mean(pertBatch)
+                # if t == atk_iter-1:
+                #     print("Class {}".format(j))
+                #     print("Margin Diff: {}".format((avgMargin - tempM).data))
+                #     print("Perturbation Equal: {}".format(torch.equal(pertBatch, temp)))
+                #     print("Perturbation Avg Diff: {}".format(torch.mean(pertBatch) - tAvg))
+                #     print()
 
-            # if t == 0:
-            #     temp = pertBatch[0].detach().clone()
-            #     print(t, avg_margin)
-            # if t == atk_iter-1:
-            #     print(t, avg_margin)
-            #     print(torch.equal(pertBatch[0], temp))
-        
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-
-    # algorithm line 8: find negative-margin maximizing perturbations
-    with torch.no_grad():
-        maxMargins = torch.full((batchSize,), float('-inf')).to(device)
-        maxMarginCls = torch.zeros(batchSize, dtype=torch.int64).to(device)
-        for j in range(numClasses):
-            pertInput = torch.add(x, pertClasses[j])
+        # algorithm line 8: find negative-margin maximizing perturbations
+        with torch.no_grad():
+            pertInput = torch.add(x, pertBatch)
             pertInput = torch.clamp(pertInput, 0, 1)
             logits = model(pertInput)
             margins = negative_margin(logits, j, y)
 
             comp = torch.gt(margins, maxMargins)
             maxMargins[comp] = margins[comp]
-            maxMarginCls[comp] = j
+            maxPerts[comp] = pertBatch[comp]
 
-        maxPerts = [pertClasses[maxMarginCls[i]][i] for i in range(batchSize)]
-        maxPerts = torch.stack(maxPerts)
-        return (maxPerts, maxMargins)
+    return (maxPerts, maxMargins)

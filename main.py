@@ -22,7 +22,7 @@ if __name__ == "__main__":
     model = ResNet18().to(device)
 
     # Get TRAIN dataset
-    train_batch = 128
+    train_batch = 256
     transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(p=0.5),
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         )
     test_loader = DataLoader(
         test_dataset,
-        batch_size=100, 
+        batch_size=256, 
         shuffle=False, 
         num_workers=0)
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     eps = 8/255
     atk_iter = 10
     train_iter = 25
-    train_epoch = 2
+    train_epoch = 10
 
     pgd_adv = PGD(device, model)
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             )
         
         # Test model
-        print("\n Test Epoch: {}".format(e))
+        print("\nTest Epoch: {}".format(e))
         model.eval()
         pgd_test(model,
                  device, 
