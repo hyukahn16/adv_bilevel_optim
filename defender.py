@@ -24,7 +24,6 @@ def beta_adv_train(
     model.train()
     iterator = iter(train_loader)
     for t in tqdm(range(train_iter)):
-        # print("Training Iteration {}".format(t))
         data, target = next(iterator)
         data, target = data.to(device), target.to(device)
 
