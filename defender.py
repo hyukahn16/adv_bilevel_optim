@@ -35,9 +35,7 @@ def beta_adv_train(
         if torch.numel(target) == 0:
             print("No Target")
             continue
-        # print(torch.amax(perturbs))
-        # print(torch.amin(perturbs))
-        # print(torch.mean(perturbs))
+
         optimizer.zero_grad()
         pertInput = torch.add(data, perturbs)
         pertInput = torch.clamp(pertInput, 0, 1)
