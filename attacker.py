@@ -74,7 +74,7 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
 
             margins = negative_margin(logits, j, y)
             avgMargin = torch.mean(margins)
-            avgMargin.backward() # This is the problem
+            avgMargin.backward()
             pertOptim.step()
 
             with torch.no_grad():
