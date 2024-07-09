@@ -14,6 +14,7 @@ from models import *
 from defender import beta_adv_train
 from test import pgd_test
 from pgd import PGD
+from util import save_model, load_model
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -53,12 +54,12 @@ if __name__ == "__main__":
         )
     test_loader = DataLoader(
         test_dataset,
-        batch_size=256, 
+        batch_size=200, 
         shuffle=False, 
         num_workers=0)
 
     # Define model parameters
-    lr = 0.01 # Default 0.1
+    lr = 0.1 # Default 0.1
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),
@@ -71,14 +72,27 @@ if __name__ == "__main__":
     eps = 8/255
     atk_iter = 10
     train_iter = 25
-    train_epoch = 10
+    train_epoch = 50
+    load = False
+
+    save_dir = "saved_models"
+    save_dir = os.path.join(save_dir, "resnet18_0")
+    if load:
+        saved_epoch = 0
+        train_epoch = load_model(save_dir, model, saved_epoch) + 1
+    else: # Train from beginning
+        if os.path.isdir(save_dir):
+            print("save_dir already exists! Exiting...")
+            exit()
+        else:
+            os.mkdir(save_dir)
 
     pgd_adv = PGD(device, model)
 
+    torch.backends.cudnn.benchmark = True
     # Train model
     for e in range(train_epoch):
         print("\nTrain Epoch: {}".format(e))
-        model.train()
         beta_adv_train(
             train_loader,
             eps,
@@ -90,14 +104,14 @@ if __name__ == "__main__":
             optimizer
             )
         
-        # Test model
         print("\nTest Epoch: {}".format(e))
-        model.eval()
         pgd_test(model,
                  device, 
                  test_loader, 
                  criterion, 
-                 pgd_adv
+                 pgd_adv,
+                 stopIter=25
                  )
 
-    # Save model
+        print("\nSave Epoch: {}".format(e))
+        save_model(model, e, optimizer, save_dir)
