@@ -1,7 +1,6 @@
 import torch
 
-def pgd_test(model, device, test_loader, criterion, pgd_adv):
-
+def pgd_test(model, device, test_loader, criterion, pgd_adv, stopIter=None):
     model.eval()
     test_pgd_iter = 20
 
@@ -12,6 +11,8 @@ def pgd_test(model, device, test_loader, criterion, pgd_adv):
     total = 0
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(test_loader):
+            if stopIter == batch_idx:
+                break
             inputs, targets = inputs.to(device), targets.to(device)
             total += targets.size(0)
 
