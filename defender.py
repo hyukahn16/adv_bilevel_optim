@@ -2,6 +2,7 @@ import torch
 from tqdm import tqdm
 
 from attacker import best_targeted_attack
+from pgd import PGD
 
 def beta_adv_train(
         train_loader, eps, model, device, train_iter, atk_iter, 
@@ -22,29 +23,21 @@ def beta_adv_train(
         Number of times to perturb image for attack in BETA
     """
     model.train()
-    iterator = iter(train_loader)
-    for t in tqdm(range(train_iter)):
-        data, target = next(iterator)
+
+    for batch_idx, (data, target) in enumerate(tqdm(train_loader)):
         data, target = data.to(device), target.to(device)
 
         perturbs, margins = best_targeted_attack(
             data, target, eps, model, atk_iter, device)
-        valid = torch.gt(margins, 0)
-        data, perturbs, target = data[valid], perturbs[valid], target[valid]
-        if torch.numel(target) == 0:
-            print("No Target")
-            continue
-
+        
+        # valid = torch.gt(margins, 0)
+        # temp = target.clone()[valid]
+        # if torch.numel(temp) == 0:
+        #     print("NO TARGET")
+        #     continue
+        
         optimizer.zero_grad()
-        pertInput = torch.add(data, perturbs)
-        pertInput = torch.clamp(pertInput, 0, 1)
-
-        logits = model(data)
+        logits = model(perturbs)
         loss = criterion(logits, target)
         loss.backward()
         optimizer.step()
-
-        # for name, param in model.named_parameters():
-        #     if param.requires_grad:
-        #         print(name, param.grad)
-

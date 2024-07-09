@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
@@ -10,7 +11,7 @@ def negative_margin(logits, j, y):
     ----------
     perturbed_x : logits
         logits from forward feed model from perturbed input
-    j : list(int)
+    j : int
         Attacking class
     y : list(int)
         Correct class
@@ -23,6 +24,17 @@ def negative_margin(logits, j, y):
     """
     atk_cls_pred = logits[:, j]
     corr_cls_pred = torch.gather(logits, 1, torch.unsqueeze(y, 1)).squeeze()
+    return atk_cls_pred - corr_cls_pred
+
+def negative_margin_multi(logits, j, y):
+    """
+    j: list(int)
+        Attacking class
+    """
+    atk_cls_pred = torch.gather(
+        logits, 1, torch.unsqueeze(j, 1)).squeeze()
+    corr_cls_pred = torch.gather(
+        logits, 1, torch.unsqueeze(y, 1)).squeeze()
     return atk_cls_pred - corr_cls_pred
 
 def best_targeted_attack(x, y, eps, model, atk_iter, device):
@@ -48,37 +60,33 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
     numClasses = 10
     batchSize = x.shape[0]
 
-    maxMargins = torch.full((batchSize,), float(0)).to(device)
+    maxMargins = torch.full((batchSize,), float('-inf')).to(device)
     maxPerts = torch.zeros(x.shape).to(device)
 
     for j in range(numClasses):
-        # algorithm line 3:
-        pertBatch = torch.zeros_like(x).uniform_(-eps, eps) * eps
+        pertBatch = x + torch.zeros_like(x).uniform_(-eps, eps)
+        pertBatch = torch.clamp(pertBatch, 0, 1)
         pertBatch = pertBatch.to(device)
     
-        # algorithm line 6, 7
         pertOptim = optim.RMSprop(
             [pertBatch],
             maximize=True,
-            # lr=0.1 # Default 0.01
-            lr = 2/255
+            lr=0.01 # Default 0.01  
             )
         
         for t in range(atk_iter):
             pertBatch.requires_grad_()
             pertOptim.zero_grad()
 
-            pertInput = torch.add(x, pertBatch)
-            pertInput = torch.clamp(pertInput, 0, 1)
-            logits = model(pertInput)
-
+            logits = model(pertBatch)
             margins = negative_margin(logits, j, y)
             avgMargin = torch.mean(margins)
             avgMargin.backward()
             pertOptim.step()
 
             with torch.no_grad():
-                F.normalize(pertBatch, p=2, dim=(1,2,3), out=pertBatch) * eps
+                torch.clamp(pertBatch, x-eps, x+eps, out=pertBatch)
+                torch.clamp(pertBatch, 0, 1, out=pertBatch)
             
                 # if t == 0:
                 #     tempM = avgMargin
@@ -93,9 +101,7 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
 
         # algorithm line 8: find negative-margin maximizing perturbations
         with torch.no_grad():
-            pertInput = torch.add(x, pertBatch)
-            pertInput = torch.clamp(pertInput, 0, 1)
-            logits = model(pertInput)
+            logits = model(pertBatch)
             margins = negative_margin(logits, j, y)
 
             comp = torch.gt(margins, maxMargins)
