@@ -15,6 +15,8 @@ from defender import beta_adv_train
 from test import pgd_test
 from pgd import PGD
 from util import save_model, load_model
+from plot import Plot
+from logger import Logger
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -55,11 +57,11 @@ if __name__ == "__main__":
     test_loader = DataLoader(
         test_dataset,
         batch_size=200, 
-        shuffle=False, 
+        shuffle=True, 
         num_workers=0)
 
     # Define model parameters
-    lr = 0.1 # Default 0.1
+    lr = 0.05 # Default 0.1
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),
@@ -71,21 +73,24 @@ if __name__ == "__main__":
     # Define hyperparameters
     eps = 8/255
     atk_iter = 10
-    train_iter = 25
-    train_epoch = 50
+    train_iter = None
+    train_epoch = 2
+    save = False
     load = False
+    saveDir = "saved_models"
+    saveDir = os.path.join(saveDir, "logger_test")
+    plotter = Plot(saveDir)
+    logger = Logger(saveDir)
 
-    save_dir = "saved_models"
-    save_dir = os.path.join(save_dir, "resnet18_0")
     if load:
-        saved_epoch = 0
-        train_epoch = load_model(save_dir, model, saved_epoch) + 1
-    else: # Train from beginning
-        if os.path.isdir(save_dir):
+        saved_epoch = 48
+        train_epoch = load_model(saveDir, model, saved_epoch) + 1
+    if save and not load:
+        if os.path.isdir(saveDir):
             print("save_dir already exists! Exiting...")
             exit()
         else:
-            os.mkdir(save_dir)
+            os.mkdir(saveDir)
 
     pgd_adv = PGD(device, model)
 
@@ -101,17 +106,33 @@ if __name__ == "__main__":
             train_iter,
             atk_iter,
             criterion,
-            optimizer
+            optimizer,
+            plotter,
+            logger,
             )
         
-        print("\nTest Epoch: {}".format(e))
-        pgd_test(model,
-                 device, 
-                 test_loader, 
-                 criterion, 
-                 pgd_adv,
-                 stopIter=25
-                 )
+        if e % 2 == 0:
+            print("\nTest Epoch: {}".format(e))
+            pgd_test(model,
+                    device, 
+                    test_loader, 
+                    criterion, 
+                    pgd_adv,
+                    logger,
+                    # stopIter=25
+                    )
 
-        print("\nSave Epoch: {}".format(e))
-        save_model(model, e, optimizer, save_dir)
+        if save and e % 100 == 0:
+            print("\nSave Epoch: {}".format(e))
+            save_model(model, e, optimizer, saveDir)
+
+    # print("\nLAST TEST")
+    # pgd_test(model,
+    #             device, 
+    #             test_loader, 
+    #             criterion, 
+    #             pgd_adv,
+    #             )
+
+    plotter.draw_figure_losses()
+    plotter.draw_figure_margins()

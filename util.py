@@ -1,5 +1,6 @@
 import torch
 import os
+import matplotlib.pyplot as plt
 
 def save_model(model, epoch, optimizer, save_dir):
     save_state = {

@@ -1,6 +1,6 @@
 import torch
 
-def pgd_test(model, device, test_loader, criterion, pgd_adv, stopIter=None):
+def pgd_test(model, device, test_loader, criterion, pgd_adv, logger, stopIter=None):
     model.eval()
     test_pgd_iter = 20
 
@@ -11,7 +11,7 @@ def pgd_test(model, device, test_loader, criterion, pgd_adv, stopIter=None):
     total = 0
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(test_loader):
-            if stopIter == batch_idx:
+            if stopIter and stopIter == batch_idx:
                 break
             inputs, targets = inputs.to(device), targets.to(device)
             total += targets.size(0)
@@ -31,12 +31,15 @@ def pgd_test(model, device, test_loader, criterion, pgd_adv, stopIter=None):
             _, predicted = adv_outputs.max(1)
             adv_correct += predicted.eq(targets).sum().item()
     
-    benign_acc_log = 'Total benign test accuracy: ' + str(100. * benign_correct / total)
-    adv_acc_log = 'Total adversarial test accuracy: ' + str(100. * adv_correct / total)
-    benign_loss_log = 'Total benign test loss: ' + str(benign_loss)
-    adv_loss_log = 'Total adversarial test loss: ' + str(adv_loss)
+    benign_acc = 'Total benign test accuracy: ' + str(100. * benign_correct / total)
+    adv_acc = 'Total adversarial test accuracy: ' + str(100. * adv_correct / total)
+    benign_loss = 'Total benign test loss: ' + str(benign_loss)
+    adv_loss = 'Total adversarial test loss: ' + str(adv_loss)
 
-    print(benign_acc_log)
-    print(adv_acc_log)
-    print(benign_loss_log)
-    print(adv_loss_log)
+    print(benign_acc)
+    print(adv_acc)
+    print(benign_loss)
+    print(adv_loss)
+
+    logger.save_test_benign_acc(benign_acc)
+    logger.save_test_robust_acc(adv_acc)
