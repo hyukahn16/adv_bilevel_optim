@@ -5,43 +5,53 @@ class Logger:
         self.saveDir = saveDir
 
         # TRAIN logs
-        self.train_loss = os.path.join(
+        self.trainLoss = []
+        self.trainLoss = os.path.join(
             self.saveDir, "train_loss.txt")
-        open(self.train_loss, 'w').close()
+        open(self.trainLoss, 'w').close()
 
-        self.train_margin = os.path.join(
+        self.trainMargin = []
+        self.trainMargin = os.path.join(
             self.saveDir, "train_margin.txt")
-        open(self.train_margin, 'w').close()
+        open(self.trainMargin, 'w').close()
 
-        self.train_acc = os.path.join(
+        self.trainAcc = []
+        self.trainAcc = os.path.join(
             self.saveDir, "train_acc.txt")
-        open(self.train_acc, 'w').close()
+        open(self.trainAcc, 'w').close()
 
         # TEST logs
-        self.test_benign_acc = os.path.join(
+        self.testBenignAcc = []
+        self.testBenignAcc = os.path.join(
             self.saveDir, "test_benign_acc.txt")
-        open(self.test_benign_acc, 'w').close()
+        open(self.testBenignAcc, 'w').close()
 
-        self.test_robust_acc = os.path.join(
+        self.testRobustAcc = []
+        self.testRobustAcc = os.path.join(
             self.saveDir, "test_robust_acc.txt")
-        open(self.test_robust_acc, 'w').close()
+        open(self.testRobustAcc, 'w').close()
 
     def save_train_loss(self, loss):
-        with open(self.train_loss, 'a') as f:
+        self.trainLoss.append(loss)
+        with open(self.trainLoss, 'a') as f:
             f.write("{}\n".format(loss))
 
     def save_train_margin(self, margin):
-        with open(self.train_margin, 'a') as f:
+        self.trainMargin.append(margin)
+        with open(self.trainMargin, 'a') as f:
             f.write("{}\n".format(margin))
 
     def save_train_acc(self, acc):
-        with open(self.train_acc, 'a') as f:
+        self.trainAcc.append(acc)
+        with open(self.trainAcc, 'a') as f:
             f.write("{}\n".format(acc))
 
     def save_test_benign_acc(self, acc):
-        with open(self.test_benign_acc, 'a') as f:
+        self.testBenignAcc.append(acc)
+        with open(self.testBenignAcc, 'a') as f:
             f.write("{}\n".format(acc))
    
     def save_test_robust_acc(self, acc):
-        with open(self.test_robust_acc, 'a') as f:
+        self.testRobustAcc.append(acc)
+        with open(self.testRobustAcc, 'a') as f:
             f.write("{}\n".format(acc))
