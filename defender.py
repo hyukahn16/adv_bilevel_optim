@@ -6,7 +6,7 @@ from pgd import PGD
 
 def beta_adv_train(
         train_loader, eps, model, device, train_iter, atk_iter, 
-        criterion, optimizer, plotter, logger):
+        criterion, optimizer, logger):
     """Gets and prints the spreadsheet's header columns
 
     Parameters
@@ -57,6 +57,3 @@ def beta_adv_train(
     logger.save_train_loss(epochLoss)
     logger.save_train_margin(epochMargin/batch_idx)
     logger.save_train_acc(epochAcc)
-
-    plotter.modelLosses.append(epochLoss)
-    plotter.pertMargins.append(epochMargin)
