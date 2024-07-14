@@ -79,7 +79,6 @@ if __name__ == "__main__":
     load = False
     saveDir = "saved_models"
     saveDir = os.path.join(saveDir, "logger_test")
-    plotter = Plot(saveDir)
     logger = Logger(saveDir)
 
     if load:
@@ -107,7 +106,6 @@ if __name__ == "__main__":
             atk_iter,
             criterion,
             optimizer,
-            plotter,
             logger,
             )
         
@@ -134,5 +132,6 @@ if __name__ == "__main__":
     #             pgd_adv,
     #             )
 
+    plotter = Plot(saveDir, logger)
     plotter.draw_figure_losses()
     plotter.draw_figure_margins()
