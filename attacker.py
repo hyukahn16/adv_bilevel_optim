@@ -1,7 +1,5 @@
 import torch
-import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 
 def negative_margin(logits, j, y):
     """Forward feeds perturbed input and calculates margin value.

@@ -1,12 +1,7 @@
 import os
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-import torch.backends.cudnn as cudnn
-from torch.utils.data import RandomSampler, DataLoader
 
 # import cProfile
 
@@ -14,54 +9,29 @@ from models import *
 from defender import beta_adv_train
 from test import pgd_test
 from pgd import PGD
-from util import save_model, load_model
+from util import save_model, load_model, get_trainloader, get_testloader
 from plot import Plot
 from logger import Logger
 
 if __name__ == "__main__":
+    torch.backends.cudnn.benchmark = True
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-    # Define DNN
     model = ResNet18().to(device)
+    trainLoader = get_trainloader(trainBatch=256)
+    testLoader = get_testloader(testBatch=200, shuffle=False)
+    pgdAdv = PGD(model)
 
-    # Get TRAIN dataset
-    train_batch = 256
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.ToTensor(),
-    ])
-    train_dataset = torchvision.datasets.CIFAR10(
-        root='./data',
-        train=True,
-        download=True,
-        transform=transform_train
-        )
-    train_loader = DataLoader(
-        train_dataset, 
-        batch_size=train_batch, 
-        shuffle=True, 
-        num_workers=0,
-        )
-    
-    # Get TEST dataset
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-    ])
-    test_dataset = torchvision.datasets.CIFAR10(
-        root='./data',
-        train=False,
-        download=True,
-        transform=transform_test
-        )
-    test_loader = DataLoader(
-        test_dataset,
-        batch_size=200, 
-        shuffle=True, 
-        num_workers=0)
+    # Define hyperparameters
+    eps = 8/255
+    lr = 0.05 # Default 0.1 (used 0.05)
+    atkIter = 10
+    trainEpochStart, trainEpochEnd = 0, 50
+    save = True
+    load = True
+    saveDir = "saved_models"
+    saveDir = os.path.join(saveDir, "pgd")
+    trainPGD = True
 
-    # Define model parameters
-    lr = 0.05 # Default 0.1
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),
@@ -70,67 +40,52 @@ if __name__ == "__main__":
         weight_decay=0.0005
     )
 
-    # Define hyperparameters
-    eps = 8/255
-    atk_iter = 10
-    train_iter = None
-    train_epoch = 2
-    save = False
-    load = False
-    saveDir = "saved_models"
-    saveDir = os.path.join(saveDir, "logger_test")
-    logger = Logger(saveDir)
-
     if load:
-        saved_epoch = 48
-        train_epoch = load_model(saveDir, model, saved_epoch) + 1
-    if save and not load:
+        savedEpoch = 50
+        load_model(saveDir, model, savedEpoch)
+        trainEpochStart = savedEpoch
+        trainEpochEnd += trainEpochStart + 50
+        saveDir += "_" + str(trainEpochStart)
+    if save or load:
         if os.path.isdir(saveDir):
-            print("save_dir already exists! Exiting...")
-            exit()
-        else:
-            os.mkdir(saveDir)
+            exit("saveDir already exists! Exiting...")
+        os.mkdir(saveDir)
+        print("Made model save directory at " + saveDir)
+        logger = Logger(saveDir)
 
-    pgd_adv = PGD(device, model)
-
-    torch.backends.cudnn.benchmark = True
     # Train model
-    for e in range(train_epoch):
+    print("Training from {} to {}".format(trainEpochStart, trainEpochEnd))
+    for e in range(trainEpochStart, trainEpochEnd):
         print("\nTrain Epoch: {}".format(e))
         beta_adv_train(
-            train_loader,
-            eps,
-            model,
-            device,
-            train_iter,
-            atk_iter,
-            criterion,
-            optimizer,
-            logger,
+            trainLoader, eps, model, device,
+            atkIter, criterion, optimizer, logger,
+            trainPGD
             )
         
-        if e % 2 == 0:
+        if e % 1 == 0:
             print("\nTest Epoch: {}".format(e))
-            pgd_test(model,
-                    device, 
-                    test_loader, 
-                    criterion, 
-                    pgd_adv,
-                    logger,
-                    # stopIter=25
-                    )
+            pgd_test(
+                model, device, testLoader, 
+                criterion, pgdAdv, logger,
+                # stopIter=25
+                )
 
-        if save and e % 100 == 0:
+        if save and (e+1) % 10 == 0:
             print("\nSave Epoch: {}".format(e))
-            save_model(model, e, optimizer, saveDir)
+            save_model(model, e+1, optimizer, saveDir)
+
+        if e == 99:
+            print("\nChanged learning rate to 0.005\n")
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 0.005
 
     # print("\nLAST TEST")
-    # pgd_test(model,
-    #             device, 
-    #             test_loader, 
-    #             criterion, 
-    #             pgd_adv,
-    #             )
+    # pgd_test(model, device, testLoader, criterion, pgdAdv)
+
+    # if save:
+    #     print("\nSave Epoch: {}".format(trainEpochEnd-1))
+    #     save_model(model, trainEpochEnd-1, optimizer, saveDir)
 
     plotter = Plot(saveDir, logger)
     plotter.draw_figure_losses()

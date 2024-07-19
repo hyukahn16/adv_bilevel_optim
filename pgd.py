@@ -10,15 +10,11 @@ from autoattack import AutoAttack
 class PGD(object):
     def __init__(
             self,
-            device,
             model,
             rand_init=True,
             epsilon=8/255,
-            alpha=2/255,
-            testing=False):
-        
-        self.device = device
-        self.testing = testing
+            alpha=2/255):
+
         self.model = model
 
         # PGD hyperparameters
