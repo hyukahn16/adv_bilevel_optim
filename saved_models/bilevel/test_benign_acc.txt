@@ -1,50 +1,50 @@
-Total benign test accuracy: 31.26
-Total benign test accuracy: 39.31
-Total benign test accuracy: 44.09
-Total benign test accuracy: 47.32
-Total benign test accuracy: 51.44
-Total benign test accuracy: 54.78
-Total benign test accuracy: 56.24
-Total benign test accuracy: 59.15
-Total benign test accuracy: 61.66
-Total benign test accuracy: 63.29
-Total benign test accuracy: 66.82
-Total benign test accuracy: 65.46
-Total benign test accuracy: 70.02
-Total benign test accuracy: 68.53
-Total benign test accuracy: 69.6
-Total benign test accuracy: 69.6
-Total benign test accuracy: 70.62
-Total benign test accuracy: 70.78
-Total benign test accuracy: 72.53
-Total benign test accuracy: 72.33
-Total benign test accuracy: 72.4
-Total benign test accuracy: 72.17
-Total benign test accuracy: 74.4
-Total benign test accuracy: 73.4
-Total benign test accuracy: 75.44
-Total benign test accuracy: 75.31
-Total benign test accuracy: 75.12
-Total benign test accuracy: 74.98
-Total benign test accuracy: 74.97
-Total benign test accuracy: 76.44
-Total benign test accuracy: 76.27
-Total benign test accuracy: 76.1
-Total benign test accuracy: 76.61
-Total benign test accuracy: 77.61
-Total benign test accuracy: 77.55
-Total benign test accuracy: 78.36
-Total benign test accuracy: 75.74
-Total benign test accuracy: 78.51
-Total benign test accuracy: 77.35
-Total benign test accuracy: 77.07
-Total benign test accuracy: 76.84
-Total benign test accuracy: 77.92
-Total benign test accuracy: 77.68
-Total benign test accuracy: 77.74
-Total benign test accuracy: 78.69
-Total benign test accuracy: 76.37
-Total benign test accuracy: 77.9
-Total benign test accuracy: 78.31
-Total benign test accuracy: 79.28
-Total benign test accuracy: 78.32
+31.26
+39.31
+44.09
+47.32
+51.44
+54.78
+56.24
+59.15
+61.66
+63.29
+66.82
+65.46
+70.02
+68.53
+69.6
+69.6
+70.62
+70.78
+72.53
+72.33
+72.4
+72.17
+74.4
+73.4
+75.44
+75.31
+75.12
+74.98
+74.97
+76.44
+76.27
+76.1
+76.61
+77.61
+77.55
+78.36
+75.74
+78.51
+77.35
+77.07
+76.84
+77.92
+77.68
+77.74
+78.69
+76.37
+77.9
+78.31
+79.28
+78.32

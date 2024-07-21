@@ -1,50 +1,50 @@
-Total adversarial test accuracy: 21.74
-Total adversarial test accuracy: 24.54
-Total adversarial test accuracy: 27.17
-Total adversarial test accuracy: 29.22
-Total adversarial test accuracy: 29.35
-Total adversarial test accuracy: 31.81
-Total adversarial test accuracy: 32.48
-Total adversarial test accuracy: 34.94
-Total adversarial test accuracy: 35.98
-Total adversarial test accuracy: 38.1
-Total adversarial test accuracy: 36.1
-Total adversarial test accuracy: 37.68
-Total adversarial test accuracy: 40.19
-Total adversarial test accuracy: 38.12
-Total adversarial test accuracy: 39.81
-Total adversarial test accuracy: 40.89
-Total adversarial test accuracy: 41.99
-Total adversarial test accuracy: 40.44
-Total adversarial test accuracy: 42.36
-Total adversarial test accuracy: 41.98
-Total adversarial test accuracy: 42.89
-Total adversarial test accuracy: 44.76
-Total adversarial test accuracy: 44.67
-Total adversarial test accuracy: 43.91
-Total adversarial test accuracy: 44.26
-Total adversarial test accuracy: 45.08
-Total adversarial test accuracy: 43.74
-Total adversarial test accuracy: 45.5
-Total adversarial test accuracy: 46.16
-Total adversarial test accuracy: 45.02
-Total adversarial test accuracy: 45.24
-Total adversarial test accuracy: 46.41
-Total adversarial test accuracy: 47.09
-Total adversarial test accuracy: 46.61
-Total adversarial test accuracy: 45.98
-Total adversarial test accuracy: 46.17
-Total adversarial test accuracy: 47.09
-Total adversarial test accuracy: 45.89
-Total adversarial test accuracy: 46.03
-Total adversarial test accuracy: 47.22
-Total adversarial test accuracy: 46.74
-Total adversarial test accuracy: 47.32
-Total adversarial test accuracy: 47.52
-Total adversarial test accuracy: 45.66
-Total adversarial test accuracy: 46.65
-Total adversarial test accuracy: 46.85
-Total adversarial test accuracy: 47.5
-Total adversarial test accuracy: 46.82
-Total adversarial test accuracy: 46.64
-Total adversarial test accuracy: 47.33
+21.74
+24.54
+27.17
+29.22
+29.35
+31.81
+32.48
+34.94
+35.98
+38.1
+36.1
+37.68
+40.19
+38.12
+39.81
+40.89
+41.99
+40.44
+42.36
+41.98
+42.89
+44.76
+44.67
+43.91
+44.26
+45.08
+43.74
+45.5
+46.16
+45.02
+45.24
+46.41
+47.09
+46.61
+45.98
+46.17
+47.09
+45.89
+46.03
+47.22
+46.74
+47.32
+47.52
+45.66
+46.65
+46.85
+47.5
+46.82
+46.64
+47.33
