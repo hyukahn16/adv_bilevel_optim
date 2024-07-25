@@ -2,9 +2,9 @@ import os
 
 class Logger:
     def __init__(self, saveDir):
+        self.saveDir = saveDir
         if not saveDir:
             return
-        self.saveDir = saveDir
 
         # TRAIN logs
         self.trainLossList = []
