@@ -31,6 +31,7 @@ def negative_margin_multi(logits, j, y):
     """
     atk_cls_pred = torch.gather(
         logits, 1, torch.unsqueeze(j, 1)).squeeze()
+    # print("Max Logits: {}".format(atk_cls_pred))
     corr_cls_pred = torch.gather(
         logits, 1, torch.unsqueeze(y, 1)).squeeze()
     return atk_cls_pred - corr_cls_pred
@@ -55,39 +56,45 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
     -------
     List of perturbations (NOT the perturbed image)
     """
+    # print("\nY: {}".format(y))
     numClasses = 10
     batchSize = x.shape[0]
 
     maxMargins = torch.full((batchSize,), float('-inf')).to(device)
-    maxClasses = torch.full((batchSize,), int('-1')).to(device)
     maxPerts = torch.zeros(x.shape).to(device)
+    maxClasses = torch.full((batchSize,), int('-1')).to(device)
 
     with torch.no_grad():
         for j in range(numClasses):
             perts = x + torch.zeros_like(x).uniform_(-eps, eps)
             perts = torch.clamp(perts, 0, 1)
-            perts = perts.to(device)
 
             logits = model(perts)
             margins = negative_margin(logits, j, y)
+            # print("Margin @ {}: {}".format(j, margins))
 
-            comp = torch.gt(margins, maxMargins)
+            comp = torch.logical_and(torch.gt(margins, maxMargins), torch.ne(y, j))
             maxMargins[comp] = margins[comp]
-            maxClasses[comp] = y[comp]
             maxPerts[comp] = perts[comp]
-        
+            maxClasses[comp] = j
+    # print("---")
+    # print("Max Margins: {}".format(maxMargins))
+    # print("Max Classes: {}".format(maxClasses))
+    # logits = model(maxPerts)
+    # margins = negative_margin_multi(logits, maxClasses, y)
+    # print("Logits:\n{}".format(logits))
+    # print("Margins: {}".format(margins))
+    pertOptim = optim.RMSprop(
+        [maxPerts],
+        maximize=True,
+        lr=0.005 # Default 0.01
+        )
     for t in range(atk_iter):
-        pertOptim = optim.RMSprop(
-            [maxPerts],
-            maximize=True,
-            lr=0.001 # Default 0.01 # 0.001 seems to increase avg_margin at good pace
-            )
-        
         maxPerts.requires_grad_()
         pertOptim.zero_grad()
 
         logits = model(maxPerts)
-        margins = negative_margin(logits, j, y)
+        margins = negative_margin_multi(logits, maxClasses, y)
         avgMargin = torch.mean(margins)
         avgMargin.backward()
         pertOptim.step()
@@ -95,5 +102,5 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
         with torch.no_grad():
             torch.clamp(maxPerts, x-eps, x+eps, out=maxPerts)
             torch.clamp(maxPerts, 0, 1, out=maxPerts)
-
-    return (maxPerts, avgMargin)
+            
+    return (maxPerts, margins)
