@@ -2,6 +2,8 @@ import os
 
 class Logger:
     def __init__(self, saveDir):
+        if not saveDir:
+            return
         self.saveDir = saveDir
 
         # TRAIN logs
@@ -31,27 +33,43 @@ class Logger:
             self.saveDir, "test_robust_acc.txt")
         open(self.testRobustAcc, 'w').close()
 
+
     def save_train_loss(self, loss):
+        if not self.saveDir:
+            return
+        
         self.trainLossList.append(loss)
         with open(self.trainLoss, 'a') as f:
             f.write("{}\n".format(loss))
 
     def save_train_margin(self, margin):
+        if not self.saveDir:
+            return
+        
         self.trainMarginList.append(margin)
         with open(self.trainMargin, 'a') as f:
             f.write("{}\n".format(margin))
 
     def save_train_acc(self, acc):
+        if not self.saveDir:
+            return
+        
         self.trainAccList.append(acc)
         with open(self.trainAcc, 'a') as f:
             f.write("{}\n".format(acc))
 
     def save_test_benign_acc(self, acc):
+        if not self.saveDir:
+            return
+        
         self.testBenignAccList.append(acc)
         with open(self.testBenignAcc, 'a') as f:
             f.write("{}\n".format(acc))
    
     def save_test_robust_acc(self, acc):
+        if not self.saveDir:
+            return
+        
         self.testRobustAccList.append(acc)
         with open(self.testRobustAcc, 'a') as f:
             f.write("{}\n".format(acc))
