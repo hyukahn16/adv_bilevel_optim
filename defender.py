@@ -52,7 +52,6 @@ def beta_adv_train(
 
         epochLoss += loss.item()
         if not trainPGD:
-            # epochMargin += avgMargin.item()
             epochMargin += torch.mean(margins)
         _, predIndices = logits.max(dim=1)
         epochCorrect += predIndices.eq(target).sum().item()
@@ -64,8 +63,9 @@ def beta_adv_train(
     epochAcc = 100 * epochCorrect / epochTotalData
     print("Epoch total loss:     {}".format(epochLoss))
     print("Epoch accuracy:       {}".format(epochAcc))
-    if trainPGD:
+    if not trainPGD:
         print("Epoch average margin: {}".format(epochMargin/batch_idx))
+    print("Epoch Correct Data/Total Data:   {}/{}".format(epochCorrect, epochTotalData))
 
     logger.save_train_loss(epochLoss)
     logger.save_train_acc(epochAcc)
