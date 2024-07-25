@@ -1,7 +1,9 @@
 import torch
+from tqdm import tqdm
 
-def pgd_test(model, device, test_loader, criterion, pgd_adv, logger, stopIter=None):
+def pgd_test(model, testLoader, criterion, pgdAdv, logger, stopIter=None):
     model.eval()
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     test_pgd_iter = 20
 
     benign_loss = 0
@@ -10,7 +12,7 @@ def pgd_test(model, device, test_loader, criterion, pgd_adv, logger, stopIter=No
     adv_correct = 0
     total = 0
     with torch.no_grad():
-        for batch_idx, (inputs, targets) in enumerate(test_loader):
+        for batch_idx, (inputs, targets) in enumerate(tqdm(testLoader)):
             if stopIter and stopIter == batch_idx:
                 break
             inputs, targets = inputs.to(device), targets.to(device)
@@ -23,7 +25,7 @@ def pgd_test(model, device, test_loader, criterion, pgd_adv, logger, stopIter=No
             _, predicted = outputs.max(1)
             benign_correct += predicted.eq(targets).sum().item()
 
-            adv = pgd_adv.perturb(inputs, targets, test_pgd_iter)
+            adv = pgdAdv.perturb(inputs, targets, test_pgd_iter)
             adv_outputs = model(adv)
             loss = criterion(adv_outputs, targets)
             adv_loss += loss.item()
