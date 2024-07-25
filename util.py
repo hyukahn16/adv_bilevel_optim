@@ -3,7 +3,6 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import torchvision
 import os
-import matplotlib.pyplot as plt
 
 def save_model(model, epoch, optimizer, save_dir):
     save_state = {
