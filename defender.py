@@ -33,8 +33,6 @@ def beta_adv_train(
     epochTotalData = 0
     for batch_idx, (data, target) in enumerate(tqdm(trainLoader)):
         data, target = data.to(device), target.to(device)
-        if batch_idx == 30:
-            return
 
         if not trainPGD:
             perturbs, margins = best_targeted_attack(
