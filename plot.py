@@ -41,27 +41,27 @@ class Plot:
         return dataList
 
 # Run this script to generate plots
-saveDir = "saved_models"
-saveModel = "pgd_merge"
-saveDir = os.path.join(saveDir, saveModel)
+# saveDir = "saved_models"
+# saveModel = "pgd_merge"
+# saveDir = os.path.join(saveDir, saveModel)
 
-train_acc_file = os.path.join(saveDir, "train_acc.txt")
-test_benign_acc_file = os.path.join(saveDir, "test_benign_acc.txt")
-test_robust_acc_file = os.path.join(saveDir, "test_robust_acc.txt")
-plotter = Plot(saveDir)
-trainAccList = plotter._get_from_file(train_acc_file)
-testBenAccList = plotter._get_from_file(test_benign_acc_file)
-testRobAccList = plotter._get_from_file(test_robust_acc_file)
+# train_acc_file = os.path.join(saveDir, "train_acc.txt")
+# test_benign_acc_file = os.path.join(saveDir, "test_benign_acc.txt")
+# test_robust_acc_file = os.path.join(saveDir, "test_robust_acc.txt")
+# plotter = Plot(saveDir)
+# trainAccList = plotter._get_from_file(train_acc_file)
+# testBenAccList = plotter._get_from_file(test_benign_acc_file)
+# testRobAccList = plotter._get_from_file(test_robust_acc_file)
 
-trainAccLine, = plt.plot(trainAccList, label="Train PGD Accuracy")
-testBenAccLine, = plt.plot(testBenAccList, label="Test Benign Accuracy")
-testRobAccLine, = plt.plot(testRobAccList, label="Test Robust Accuracy")
-plt.legend(handles=[trainAccLine, testBenAccLine, testRobAccLine])
-plt.xlabel("Epoch")
-plt.ylabel("Accuracy")
-plotName = "pgd_accuracy.png"
-plotDir = os.path.join(saveDir, plotName)
-plt.savefig(plotDir, dpi=1200)
+# trainAccLine, = plt.plot(trainAccList, label="Train PGD Accuracy")
+# testBenAccLine, = plt.plot(testBenAccList, label="Test Benign Accuracy")
+# testRobAccLine, = plt.plot(testRobAccList, label="Test Robust Accuracy")
+# plt.legend(handles=[trainAccLine, testBenAccLine, testRobAccLine])
+# plt.xlabel("Epoch")
+# plt.ylabel("Accuracy")
+# plotName = "pgd_accuracy.png"
+# plotDir = os.path.join(saveDir, plotName)
+# plt.savefig(plotDir, dpi=1200)
 
 # plotter.draw_figure_losses(file)
 
