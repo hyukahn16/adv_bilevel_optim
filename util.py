@@ -11,7 +11,7 @@ def save_model(model, epoch, optimizer, save_dir):
         # 'optimizer_state_dict': self.optimizer.state_dict(),
     }
     torch.save(save_state, save_dir + "/ckpt_{}.pt".format(epoch))
-    print("Model saved at epoch {}".format(epoch))
+    print("Model saved at epoch {} as {}".format(epoch-1, epoch))
 
 def load_model(load_dir, model, epoch):
     load_dir = os.path.join(load_dir, "ckpt_{}.pt".format(epoch))
