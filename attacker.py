@@ -102,5 +102,6 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
         with torch.no_grad():
             torch.clamp(maxPerts, x-eps, x+eps, out=maxPerts)
             torch.clamp(maxPerts, 0, 1, out=maxPerts)
-            
-    return (maxPerts, margins)
+    
+    maxPerts.requires_grad_(False)
+    return (maxPerts.detach(), margins.detach())
