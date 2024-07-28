@@ -7,28 +7,23 @@ class Logger:
             return
 
         # TRAIN logs
-        self.trainLossList = []
         self.trainLoss = os.path.join(
             self.saveDir, "train_loss.txt")
         open(self.trainLoss, 'w').close()
 
-        self.trainMarginList = []
         self.trainMargin = os.path.join(
             self.saveDir, "train_margin.txt")
         open(self.trainMargin, 'w').close()
 
-        self.trainAccList = []
         self.trainAcc = os.path.join(
             self.saveDir, "train_acc.txt")
         open(self.trainAcc, 'w').close()
 
         # TEST logs
-        self.testBenignAccList = []
         self.testBenignAcc = os.path.join(
             self.saveDir, "test_benign_acc.txt")
         open(self.testBenignAcc, 'w').close()
 
-        self.testRobustAccList = []
         self.testRobustAcc = os.path.join(
             self.saveDir, "test_robust_acc.txt")
         open(self.testRobustAcc, 'w').close()
@@ -38,7 +33,6 @@ class Logger:
         if not self.saveDir:
             return
         
-        self.trainLossList.append(loss)
         with open(self.trainLoss, 'a') as f:
             f.write("{}\n".format(loss))
 
@@ -46,7 +40,6 @@ class Logger:
         if not self.saveDir:
             return
         
-        self.trainMarginList.append(margin)
         with open(self.trainMargin, 'a') as f:
             f.write("{}\n".format(margin))
 
@@ -54,7 +47,6 @@ class Logger:
         if not self.saveDir:
             return
         
-        self.trainAccList.append(acc)
         with open(self.trainAcc, 'a') as f:
             f.write("{}\n".format(acc))
 
@@ -62,7 +54,6 @@ class Logger:
         if not self.saveDir:
             return
         
-        self.testBenignAccList.append(acc)
         with open(self.testBenignAcc, 'a') as f:
             f.write("{}\n".format(acc))
    
@@ -70,6 +61,5 @@ class Logger:
         if not self.saveDir:
             return
         
-        self.testRobustAccList.append(acc)
         with open(self.testRobustAcc, 'a') as f:
             f.write("{}\n".format(acc))
