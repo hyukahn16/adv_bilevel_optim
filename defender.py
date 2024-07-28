@@ -26,12 +26,13 @@ def beta_adv_train(
 
     if trainPGD:
         pgdAdv = PGD(model)
-
+    batchSize = trainLoader.batch_size
     epochLoss = 0
     epochMargin = 0
-    epochCorrect = 0
+    epochCorrectData = 0
+    epochExcludedData = 0
     epochTotalData = 0
-    for batch_idx, (data, target) in enumerate(tqdm(trainLoader)):
+    for batchIdx, (data, target) in enumerate(tqdm(trainLoader)):
         data, target = data.to(device), target.to(device)
 
         if not trainPGD:
@@ -50,24 +51,30 @@ def beta_adv_train(
         logits = model(perturbs)
         loss = criterion(logits, target)
 
-        epochLoss += loss.item()
+        epochLoss += loss.detach().item()
+        _, predIndices = logits.detach().max(dim=1)
+        # epochTotalData += target.size(0)
+        epochTotalData += batchSize
+        epochCorrectData += predIndices.eq(target).sum().item()
         if not trainPGD:
+            epochExcludedData += batchSize - target.size(0)
             epochMargin += torch.mean(margins)
-        _, predIndices = logits.max(dim=1)
-        epochCorrect += predIndices.eq(target).sum().item()
-        epochTotalData += target.size(0)
 
         loss.backward()
         optimizer.step()
 
-    epochAcc = 100 * epochCorrect / epochTotalData
-    print("Epoch total loss:     {}".format(epochLoss))
-    print("Epoch accuracy:       {}".format(epochAcc))
     if not trainPGD:
-        print("Epoch average margin: {}".format(epochMargin/batch_idx))
-    print("Epoch Correct Data/Total Data:   {}/{}".format(epochCorrect, epochTotalData))
+        epochAcc = 100 * (epochExcludedData + epochCorrectData) / epochTotalData
+        epochUsedData = epochTotalData - epochExcludedData
+        print("Excluded Data:  {}".format(epochExcludedData))
+        print("Used Data:      {}".format(epochUsedData))
+        print("Correct Data:   {}".format(epochCorrectData))
+        print("Average Margin: {}".format(epochMargin/batchIdx))
+        logger.save_train_margin(epochMargin/batchIdx)
+    else:
+        epochAcc = 100 * epochCorrectData / epochTotalData
 
+    print("Accuracy:       {}".format(epochAcc))
+    print("Total Loss:     {}".format(epochLoss))
     logger.save_train_loss(epochLoss)
     logger.save_train_acc(epochAcc)
-    if not trainPGD:
-        logger.save_train_margin(epochMargin/batch_idx)
