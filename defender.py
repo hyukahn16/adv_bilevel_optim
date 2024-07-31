@@ -53,7 +53,6 @@ def beta_adv_train(
 
         epochLoss += loss.detach().item()
         _, predIndices = logits.detach().max(dim=1)
-        # epochTotalData += target.size(0)
         epochTotalData += batchSize
         epochCorrectData += predIndices.eq(target).sum().item()
         if not trainPGD:
