@@ -1,7 +1,7 @@
 <!-- ![alt text](https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/pgd_merge/pgd_accuracy.png) -->
 | ResNet18 trained w/ PGD<sup>10</sup>  | ResNet18 traind w/ BETA<sup>10</sup> |
 | ------------- | ------------- |
-| <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/v1/saved_models/pgd_merge/pgd_accuracy.png" width="500" height="400"/>  | <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/v1/saved_models/bilevel_merge/bilevel_accuracy.png" width="500" height="400"/>  |
+| <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/pgd_merge/pgd_accuracy.png" width="500" height="400"/>  | <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/bilevel_merge/bilevel_accuracy.png" width="500" height="400"/>  |
 
 *CIFAR-10 Dataset  
 *Both models tested with PGD<sup>20</sup>  
