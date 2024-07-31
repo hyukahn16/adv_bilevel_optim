@@ -31,7 +31,6 @@ def negative_margin_multi(logits, j, y):
     """
     atk_cls_pred = torch.gather(
         logits, 1, torch.unsqueeze(j, 1)).squeeze()
-    # print("Max Logits: {}".format(atk_cls_pred))
     corr_cls_pred = torch.gather(
         logits, 1, torch.unsqueeze(y, 1)).squeeze()
     return atk_cls_pred - corr_cls_pred
@@ -56,7 +55,6 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
     -------
     List of perturbations (NOT the perturbed image)
     """
-    # print("\nY: {}".format(y))
     numClasses = 10
     batchSize = x.shape[0]
 
@@ -71,23 +69,17 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
 
             logits = model(perts)
             margins = negative_margin(logits, j, y)
-            # print("Margin @ {}: {}".format(j, margins))
 
             comp = torch.logical_and(torch.gt(margins, maxMargins), torch.ne(y, j))
             maxMargins[comp] = margins[comp]
             maxPerts[comp] = perts[comp]
             maxClasses[comp] = j
-    # print("---")
-    # print("Max Margins: {}".format(maxMargins))
-    # print("Max Classes: {}".format(maxClasses))
-    # logits = model(maxPerts)
-    # margins = negative_margin_multi(logits, maxClasses, y)
-    # print("Logits:\n{}".format(logits))
-    # print("Margins: {}".format(margins))
+
     pertOptim = optim.RMSprop(
         [maxPerts],
         maximize=True,
-        lr=0.005 # Default 0.01
+        # lr=0.005 # Default 0.01
+        lr=2/255
         )
     for t in range(atk_iter):
         maxPerts.requires_grad_()
