@@ -8,18 +8,19 @@ def save_model(model, epoch, optimizer, save_dir):
     save_state = {
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
-        # 'optimizer_state_dict': self.optimizer.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
     }
     torch.save(save_state, save_dir + "/ckpt_{}.pt".format(epoch))
     print("Model saved at epoch {} as {}".format(epoch-1, epoch))
 
-def load_model(load_dir, model, epoch):
-    load_dir = os.path.join(load_dir, "ckpt_{}.pt".format(epoch))
-    checkpoint = torch.load(load_dir)
+def load_model(loadDir, loadEpoch, model, optimizer):
+    loadDir = os.path.join(loadDir, "ckpt_{}.pt".format(loadEpoch))
+    checkpoint = torch.load(loadDir)
+
     model.load_state_dict(checkpoint["model_state_dict"])
-    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
-    print("\nLoaded model from {}".format(load_dir))
+    print("\nLoaded model from {}".format(loadDir))
     return epoch
 
 def get_trainloader(trainBatch=256):
