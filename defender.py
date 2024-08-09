@@ -6,7 +6,7 @@ from pgd import PGD
 
 def beta_adv_train(
         trainLoader, eps, model, device, atkIter, 
-        criterion, optimizer, logger, trainPGD):
+        criterion, optimizer, logger, useBETA):
     """Gets and prints the spreadsheet's header columns
 
     Parameters
@@ -23,8 +23,7 @@ def beta_adv_train(
         Number of times to perturb image for attack in BETA
     """
     model.train()
-
-    if trainPGD:
+    if not useBETA:
         pgdAdv = PGD(model)
     batchSize = trainLoader.batch_size
     epochLoss = 0
@@ -33,9 +32,12 @@ def beta_adv_train(
     epochExcludedData = 0
     epochTotalData = 0
     for batchIdx, (data, target) in enumerate(tqdm(trainLoader)):
-        data, target = data.to(device), target.to(device)
+        # data = data.cuda(pin_memory=True, non_blocking=True)
+        # target = target.cuda(pin_memory=True, non_blocking=True)
+        data = data.to(device)
+        target = target.to(device)
 
-        if not trainPGD:
+        if useBETA:
             perturbs, margins = best_targeted_attack(
                 data, target, eps, model, atkIter, device)
 
@@ -55,14 +57,14 @@ def beta_adv_train(
         _, predIndices = logits.detach().max(dim=1)
         epochTotalData += batchSize
         epochCorrectData += predIndices.eq(target).sum().item()
-        if not trainPGD:
+        if useBETA:
             epochExcludedData += batchSize - target.size(0)
             epochMargin += torch.mean(margins)
 
         loss.backward()
         optimizer.step()
 
-    if not trainPGD:
+    if useBETA:
         epochAcc = 100 * (epochExcludedData + epochCorrectData) / epochTotalData
         epochUsedData = epochTotalData - epochExcludedData
         print("Excluded Data:  {}".format(epochExcludedData))
