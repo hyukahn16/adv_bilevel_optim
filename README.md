@@ -13,3 +13,12 @@ Experiment Info:
 Notes:  
 - BETA-trained model shows better robustness to PGD<sup>20</sup> than PGD<sup>10</sup>-trained model  
 - Need to find more optimal learning rate for BETA model
+
+---
+<img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/beta_001/bilevel_accuracy.png" width="500" height="400"/>
+Experiment  Info:
+- ResNet learning rate: 0.001 from Epoch 0-100 | 0.0001 from Epoch 100-150
+- BETA learning rate: 2/255
+
+Notes:
+- Stuck in local minima?
