@@ -21,4 +21,5 @@ Experiment  Info:
 - BETA learning rate: 2/255
 
 Notes:
+- Low accuracy compared to other learning rates
 - Stuck in local minima?
