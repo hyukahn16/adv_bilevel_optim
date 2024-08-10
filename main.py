@@ -20,13 +20,15 @@ if __name__ == "__main__":
                         help="Number of attack iterations for training")
     parser.add_argument("--trainBatchSize", type=int, default=500)
     parser.add_argument("--testBatchSize", type=int, default=500)
-    parser.add_argument("--testEnabled", action="store_true", default=True,
-                        help="Run tests between training")
 
-    parser.add_argument("--useBETA", action="store_true", default=True,
+    parser.add_argument("--testEnabled", action="store_true",
+                        help="Run tests between training")
+    parser.add_argument("--useBETA", action="store_true",
                         help="Train model with PGD")
+    parser.add_argument("--betaLr", type=float, default=2/255,
+                        help="BETA learning rate")
     parser.add_argument("--lr", type=float, default=0.1,
-                        help="Learning rate")
+                        help="Model Learning rate")
     parser.add_argument("--numTrainEpoch", type=int, default=50,
                         help="Number of epochs to train")
     
@@ -43,7 +45,7 @@ if __name__ == "__main__":
     parser.add_argument("--loadDir", type=str, default="",
                         help="Directory to load model from")
 
-    # Only used for logger
+    # Only used for logging
     parser.add_argument("--trainEpochStart", type=int, default=0,
                         help="Starting train epoch (Only used for saving to log)")
     args = parser.parse_args()
@@ -54,6 +56,7 @@ if __name__ == "__main__":
         if not args.loadDir or not args.loadEpoch:
             exit("load was enabled but load directory was not provided.")
     print(args)
+
 
     torch.backends.cudnn.benchmark = True
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -68,6 +71,7 @@ if __name__ == "__main__":
         weight_decay=0.0005
     )
     pgdAdv = PGD(model)
+
 
     if args.loadEnabled:
         args.loadDir = os.path.join("saved_models", args.loadDir)
@@ -87,15 +91,16 @@ if __name__ == "__main__":
     else:
         logger = Logger(None)
 
+
     # TRAIN STARTS HERE
     trainEpochEnd = args.trainEpochStart + args.numTrainEpoch
     print("Training Epoch {}-{}".format(args.trainEpochStart, trainEpochEnd))
     for e in range(args.trainEpochStart, trainEpochEnd):
         print("\nTrain Epoch: {}".format(e))
         beta_adv_train(
-            trainLoader, args.eps, model, device,
-            args.atkIter, criterion, optimizer, logger,
-            args.useBETA
+            model, trainLoader, logger, 
+            criterion, optimizer, device,
+            args
             )
         
         if args.testEnabled and e % 1 == 0:

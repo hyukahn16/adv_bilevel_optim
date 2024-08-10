@@ -35,7 +35,7 @@ def negative_margin_multi(logits, j, y):
         logits, 1, torch.unsqueeze(y, 1)).squeeze()
     return atk_cls_pred - corr_cls_pred
 
-def best_targeted_attack(x, y, eps, model, atk_iter, device):
+def best_targeted_attack(model, device, x, y, eps, atkIter, betaLr):
     """Calculates best-class perturbation for batch of images
 
     Parameters
@@ -48,7 +48,7 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
     eps : float
         Max perturbation value
     model : PyTorch Model
-    atk_iter : int
+    atkIter : int
         Number of times to perturb image
 
     Returns
@@ -79,9 +79,9 @@ def best_targeted_attack(x, y, eps, model, atk_iter, device):
         [maxPerts],
         maximize=True,
         # lr=0.005 # Default 0.01
-        lr=2/255
+        lr=betaLr
         )
-    for t in range(atk_iter):
+    for t in range(atkIter):
         maxPerts.requires_grad_()
         pertOptim.zero_grad()
 
