@@ -16,10 +16,12 @@ Notes:
 
 ---
 <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/beta_001/beta_accuracy.png" width="500" height="400"/>
-Experiment  Info:
+
+Experiment Info:
 - ResNet learning rate: 0.001 from Epoch 0-100 | 0.0001 from Epoch 100-150
 - BETA learning rate: 2/255
 
 Notes:
 - Low accuracy compared to other learning rates
 - Stuck in local minima?
+- hello
