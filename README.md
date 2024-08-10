@@ -24,4 +24,4 @@ Experiment Info:
 Notes:
 - Low accuracy compared to other learning rates
 - Stuck in local minima?
-- hello
+- No overfitting?
