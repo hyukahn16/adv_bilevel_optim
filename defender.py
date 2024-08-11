@@ -43,11 +43,12 @@ def beta_adv_train(
                 model, device, data, target,
                 args.eps, args.atkIter, args.betaLr)
 
-            validMargins = torch.gt(margins, 0.0)
-            if True not in validMargins:
-                continue
-            perturbs = perturbs[validMargins]
-            target = target[validMargins]
+            if args.excludePositiveMargin:
+                validMargins = torch.gt(margins, 0.0)
+                if True not in validMargins:
+                    continue
+                perturbs = perturbs[validMargins]
+                target = target[validMargins]
         else: # Uses PGD
             perturbs = pgdAdv.perturb(data, target, args.atkIter)
 

@@ -21,10 +21,13 @@ if __name__ == "__main__":
     parser.add_argument("--trainBatchSize", type=int, default=500)
     parser.add_argument("--testBatchSize", type=int, default=500)
 
+    # Common args to change
     parser.add_argument("--testEnabled", action="store_true",
                         help="Run tests between training")
     parser.add_argument("--useBETA", action="store_true",
-                        help="Train model with PGD")
+                        help="Train model with BETA")
+    parser.add_argument("--excludedPositiveMargin", action="store_true",
+                        help="Train model while excluding positive BETA margin data")
     parser.add_argument("--betaLr", type=float, default=2/255,
                         help="BETA learning rate")
     parser.add_argument("--lr", type=float, default=0.1,
