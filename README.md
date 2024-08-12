@@ -1,4 +1,15 @@
-<!-- ![alt text](https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/pgd_merge/pgd_accuracy.png) -->
+### Command
+Train using BETA while saving model:
+```
+python main.py --testEnabled --useBETA --excludePositiveMargin --saveEnabled --saveDir save_folder  
+```
+Train using BETA while saving model and loading model:
+```
+python main.py --testEnabled --useBETA --excludePositiveMargin --saveEnabled --saveDir save_folder --loadEnabled --loadDir load_dir
+```
+
+
+### Experiment
 | ResNet18 trained w/ PGD<sup>10</sup>  | ResNet18 traind w/ BETA<sup>10</sup> |
 | ------------- | ------------- |
 | <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/pgd_merge/pgd_accuracy.png" width="500" height="400"/>  | <img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/bilevel_merge/bilevel_accuracy.png" width="500" height="400"/>  |
