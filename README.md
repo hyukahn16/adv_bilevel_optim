@@ -1,11 +1,11 @@
 ### Command
-Train using BETA while saving model:
+Train using BETA while saving model
 ```
-python main.py --testEnabled --useBETA --excludePositiveMargin --saveEnabled --saveDir save_folder  
+python main.py --testEnabled --useBETA --saveEnabled --saveDir save_folder  
 ```
-Train using BETA while saving model and loading model:
+Train using BETA while saving model and loading model (saving and loading directories may be same)
 ```
-python main.py --testEnabled --useBETA --excludePositiveMargin --saveEnabled --saveDir save_folder --loadEnabled --loadDir load_dir
+python main.py --testEnabled --useBETA --saveEnabled --saveDir save_folder --loadEnabled --loadDir load_dir
 ```
 
 
