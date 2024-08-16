@@ -87,7 +87,7 @@ class Logger:
             for key, value in args_dict.items():
                 file.write(f"{key}: {value}\n")
 
-        print("Arguments saved to args.txt")
+        print("Arguments saved to " + self.trainArgsFile)
 
     def write_args_single(self, arg):
         if not self.saveDir:
