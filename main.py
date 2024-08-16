@@ -26,7 +26,7 @@ if __name__ == "__main__":
                         help="Run tests between training")
     parser.add_argument("--useBETA", action="store_true",
                         help="Train model with BETA")
-    parser.add_argument("--excludedPositiveMargin", action="store_true",
+    parser.add_argument("--excludePositiveMargin", action="store_true",
                         help="Train model while excluding positive BETA margin data")
     parser.add_argument("--betaLr", type=float, default=2/255,
                         help="BETA learning rate")
@@ -84,8 +84,7 @@ if __name__ == "__main__":
     if args.saveEnabled:
         args.saveDir = os.path.join("saved_models", args.saveDir)
         if os.path.isdir(args.saveDir):
-            # exit("saveDir already exists! Exiting...")
-            print("Using existing save directory")
+            print("Using existing save directory at " + args.saveDir)
         else:
             os.mkdir(args.saveDir)
             print("Made model save directory at " + args.saveDir)
