@@ -34,6 +34,9 @@ if __name__ == "__main__":
                         help="Model Learning rate")
     parser.add_argument("--numTrainEpoch", type=int, default=50,
                         help="Number of epochs to train")
+    # Only used for logging
+    parser.add_argument("--trainEpochStart", type=int, default=0,
+                        help="Starting train epoch (Only used for saving to log)")
     
     parser.add_argument("--saveEnabled", action="store_true",
                         help="Save model during training")
@@ -48,9 +51,6 @@ if __name__ == "__main__":
     parser.add_argument("--loadDir", type=str, default="",
                         help="Directory to load model from")
 
-    # Only used for logging
-    parser.add_argument("--trainEpochStart", type=int, default=0,
-                        help="Starting train epoch (Only used for saving to log)")
     args = parser.parse_args()
 
     if args.saveEnabled and not args.saveDir:
