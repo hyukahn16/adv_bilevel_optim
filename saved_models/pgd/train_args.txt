@@ -1,0 +1,20 @@
+
+
+eps: 0.03137254901960784
+atkIter: 10
+trainBatchSize: 500
+testBatchSize: 500
+testEnabled: True
+useBETA: False
+excludePositiveMargin: False
+betaLr: 0.00784313725490196
+lr: 0.1
+numTrainEpoch: 150
+trainEpochStart: 0
+saveEnabled: True
+saveDir: saved_models\pgd
+loadEnabled: False
+loadEpoch: 0
+loadDir: 
+Epoch 100: Changed learning rate to 0.01
+
