@@ -1,0 +1,38 @@
+
+
+eps: 0.03137254901960784
+atkIter: 10
+trainBatchSize: 500
+testBatchSize: 500
+testEnabled: True
+useBETA: True
+excludePositiveMargin: False
+betaLr: 0.00784313725490196
+lr: 0.1
+numTrainEpoch: 150
+saveEnabled: True
+saveDir: saved_models\bilevel_noexclude
+loadEnabled: False
+loadEpoch: 0
+loadDir: 
+trainEpochStart: 0
+Epoch 100: Changed learning rate to 0.01
+
+
+
+eps: 0.03137254901960784
+atkIter: 10
+trainBatchSize: 500
+testBatchSize: 500
+testEnabled: True
+useBETA: True
+excludePositiveMargin: False
+betaLr: 0.00784313725490196
+lr: 0.01
+numTrainEpoch: 30
+saveEnabled: True
+saveDir: saved_models\bilevel_noexclude
+loadEnabled: True
+loadEpoch: 120
+loadDir: saved_models\bilevel_noexclude
+trainEpochStart: 120
