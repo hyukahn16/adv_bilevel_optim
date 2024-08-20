@@ -1,4 +1,6 @@
 import torch
+import torch.nn as nn
+import torch.nn.init as init
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import torchvision
@@ -59,3 +61,13 @@ def get_testloader(testBatch=200, shuffle=False):
         shuffle=shuffle, 
         num_workers=0)
     return testLoader
+
+def weights_init(m):
+    if isinstance(m, nn.Conv2d):
+        init.kaiming_normal_(m.weight.data, nonlinearity='relu')
+        if m.bias is not None:
+            init.constant_(m.bias.data, 0)
+    elif isinstance(m, nn.Linear):
+        init.xavier_normal_(m.weight.data)
+        if m.bias is not None:
+            init.constant_(m.bias.data, 0)
