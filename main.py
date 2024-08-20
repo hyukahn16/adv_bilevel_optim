@@ -48,11 +48,10 @@ if __name__ == "__main__":
                         help="Directory to load model from")
 
     args = parser.parse_args()
-
-    if args.loadDir or not args.loadEpoch:
-        exit("load was enabled but load epoch was not provided.")
     print(args)
 
+    if args.loadDir != '' and not args.loadEpoch:
+        exit("load was enabled but load epoch was not provided.")
 
     torch.backends.cudnn.benchmark = True
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -70,12 +69,12 @@ if __name__ == "__main__":
     pgdAdv = PGD(model)
 
 
-    if args.loadDir:
+    if args.loadDir != "":
         args.loadDir = os.path.join("saved_models", args.loadDir)
         load_model(args.loadDir, args.loadEpoch, model, optimizer)
         # Update train epochs
         args.trainEpochStart = args.loadEpoch + 1
-    if args.saveDir:
+    if args.saveDir != "":
         args.saveDir = os.path.join("saved_models", args.saveDir)
         if os.path.isdir(args.saveDir):
             print("Using existing save directory at " + args.saveDir)
@@ -106,7 +105,7 @@ if __name__ == "__main__":
                 criterion, pgdAdv, logger,
                 )
  
-        if args.saveDir and (e+1) % 10 == 0:
+        if args.saveDir != "" and (e+1) % 10 == 0:
             print("\nSave Epoch: {}".format(e))
             save_model(model, e+1, optimizer, args.saveDir)
 
