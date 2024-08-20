@@ -38,26 +38,19 @@ if __name__ == "__main__":
     parser.add_argument("--trainEpochStart", type=int, default=0,
                         help="Starting train epoch (Only used for saving to log)")
     
-    parser.add_argument("--saveEnabled", action="store_true",
-                        help="Save model during training")
     parser.add_argument("--saveDir", type=str, default="", 
                         help="Base directory for where the saved models are saved. \
                             can NOT be existing directory")    
     
-    parser.add_argument("--loadEnabled", action="store_true",
-                        help="Load a saved model")
-    parser.add_argument("--loadEpoch", type=int, default=0,
+    parser.add_argument("--loadEpoch", type=int,
                         help="Epoch to load saved model. Used only when load set True.")
     parser.add_argument("--loadDir", type=str, default="",
                         help="Directory to load model from")
 
     args = parser.parse_args()
 
-    if args.saveEnabled and not args.saveDir:
-        exit("Save was enabled but save directory was not provided.")
-    if args.loadEnabled:
-        if not args.loadDir or not args.loadEpoch:
-            exit("load was enabled but load directory was not provided.")
+    if args.loadDir or not args.loadEpoch:
+        exit("load was enabled but load epoch was not provided.")
     print(args)
 
 
@@ -77,12 +70,12 @@ if __name__ == "__main__":
     pgdAdv = PGD(model)
 
 
-    if args.loadEnabled:
+    if args.loadDir:
         args.loadDir = os.path.join("saved_models", args.loadDir)
         load_model(args.loadDir, args.loadEpoch, model, optimizer)
         # Update train epochs
         args.trainEpochStart = args.loadEpoch + 1
-    if args.saveEnabled:
+    if args.saveDir:
         args.saveDir = os.path.join("saved_models", args.saveDir)
         if os.path.isdir(args.saveDir):
             print("Using existing save directory at " + args.saveDir)
@@ -113,7 +106,7 @@ if __name__ == "__main__":
                 criterion, pgdAdv, logger,
                 )
  
-        if args.saveEnabled and (e+1) % 10 == 0:
+        if args.saveDir and (e+1) % 10 == 0:
             print("\nSave Epoch: {}".format(e))
             save_model(model, e+1, optimizer, args.saveDir)
 
