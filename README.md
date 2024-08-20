@@ -38,11 +38,11 @@ Notes:
 - No overfitting (from low learning rate - training possibly not done within 150 epochs)
 
 ---
-<img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/bilevel_noexclude/bilevel_accuracy.png" width="500" height="400"/>
+<img src="https://github.com/hyukahn16/adv_bilevel_optim/blob/master/saved_models/pgd/merged_accuracy.png" width="500" height="400"/>
 
 Experiment Info:
 - ResNet learning rate: 0.1 from Epoch 0-100 | 0.01 from Epoch 100-150
 - BETA learning rate: 2/255
 
 Notes:
-- Shows overfitting
+- Both PGD and BETA show overfitting
