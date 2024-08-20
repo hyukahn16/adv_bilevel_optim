@@ -97,5 +97,5 @@ def best_targeted_attack(model, device, x, y, eps, atkIter, betaLr):
         maxPerts[comp] = perts[comp]
         maxClasses[comp] = j
 
-    maxPerts.requires_grad_(False)
+    # maxPerts.requires_grad_(False)
     return (maxPerts.detach(), margins.detach())
