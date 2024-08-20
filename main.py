@@ -9,7 +9,7 @@ from models import *
 from defender import beta_adv_train
 from test import pgd_test
 from pgd import PGD
-from util import save_model, load_model, get_trainloader, get_testloader
+from util import *
 from logger import Logger
 
 if __name__ == "__main__":
@@ -66,6 +66,7 @@ if __name__ == "__main__":
     trainLoader = get_trainloader(trainBatch=args.trainBatchSize)
     testLoader = get_testloader(testBatch=args.testBatchSize, shuffle=False)
     model = ResNet18().to(device)
+    model.apply(weights_init)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),
@@ -80,7 +81,7 @@ if __name__ == "__main__":
         args.loadDir = os.path.join("saved_models", args.loadDir)
         load_model(args.loadDir, args.loadEpoch, model, optimizer)
         # Update train epochs
-        args.trainEpochStart = args.loadEpoch
+        args.trainEpochStart = args.loadEpoch + 1
     if args.saveEnabled:
         args.saveDir = os.path.join("saved_models", args.saveDir)
         if os.path.isdir(args.saveDir):
@@ -116,12 +117,12 @@ if __name__ == "__main__":
             print("\nSave Epoch: {}".format(e))
             save_model(model, e+1, optimizer, args.saveDir)
 
-        # if e == 100:
-        #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] = args.lr / 10
-        #     log = f"Epoch {e}: Changed learning rate to {args.lr/10}\n"
-        #     print(log)
-        #     logger.write_args_single(log)
+        if e == 100:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = args.lr / 10
+            log = f"Epoch {e}: Changed learning rate to {args.lr/10}\n"
+            print(log)
+            logger.write_args_single(log)
 
     # if save:
     #     print("\nSave Epoch: {}".format(trainEpochEnd-1))
