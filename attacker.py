@@ -62,38 +62,40 @@ def best_targeted_attack(model, device, x, y, eps, atkIter, betaLr):
     maxPerts = torch.zeros(x.shape).to(device)
     maxClasses = torch.full((batchSize,), int('-1')).to(device)
 
-    with torch.no_grad():
-        for j in range(numClasses):
-            perts = x + torch.zeros_like(x).uniform_(-eps, eps)
-            perts = torch.clamp(perts, 0, 1)
+    for j in range(numClasses):
+        perts = x + torch.zeros_like(x).uniform_(-eps, eps)
+        perts = torch.clamp(perts, 0, 1)
+
+        pertOptim = optim.RMSprop(
+            [perts],
+            maximize=True,
+            # lr=0.005 # Default 0.01
+            lr=betaLr
+            )
+
+        for t in range(atkIter):
+            perts.requires_grad_()
+            pertOptim.zero_grad()
 
             logits = model(perts)
             margins = negative_margin(logits, j, y)
+            avgMargin = torch.mean(margins)
+            avgMargin.backward()
+            pertOptim.step()
 
-            comp = torch.logical_and(torch.gt(margins, maxMargins), torch.ne(y, j))
-            maxMargins[comp] = margins[comp]
-            maxPerts[comp] = perts[comp]
-            maxClasses[comp] = j
+            with torch.no_grad():
+                torch.clamp(perts, x-eps, x+eps, out=perts)
+                torch.clamp(perts, 0, 1, out=perts)
 
-    pertOptim = optim.RMSprop(
-        [maxPerts],
-        maximize=True,
-        # lr=0.005 # Default 0.01
-        lr=betaLr
-        )
-    for t in range(atkIter):
-        maxPerts.requires_grad_()
-        pertOptim.zero_grad()
+        logits = model(perts)
+        margins = negative_margin(logits, j, y)
+        # Extract perturbations with greater margin
+        comp = torch.logical_and(
+            torch.gt(margins, maxMargins), 
+            torch.ne(y, j))
+        maxMargins[comp] = margins[comp]
+        maxPerts[comp] = perts[comp]
+        maxClasses[comp] = j
 
-        logits = model(maxPerts)
-        margins = negative_margin_multi(logits, maxClasses, y)
-        avgMargin = torch.mean(margins)
-        avgMargin.backward()
-        pertOptim.step()
-
-        with torch.no_grad():
-            torch.clamp(maxPerts, x-eps, x+eps, out=maxPerts)
-            torch.clamp(maxPerts, 0, 1, out=maxPerts)
-    
     maxPerts.requires_grad_(False)
     return (maxPerts.detach(), margins.detach())
