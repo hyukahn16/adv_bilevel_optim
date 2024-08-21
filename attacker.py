@@ -60,7 +60,7 @@ def best_targeted_attack(model, device, x, y, eps, atkIter, betaLr):
 
     maxMargins = torch.full((batchSize,), float('-inf')).to(device)
     maxPerts = torch.zeros(x.shape).to(device)
-    maxClasses = torch.full((batchSize,), int('-1')).to(device)
+    # maxClasses = torch.full((batchSize,), int('-1')).to(device)
 
     for j in range(numClasses):
         perts = x + torch.zeros_like(x).uniform_(-eps, eps)
@@ -72,8 +72,9 @@ def best_targeted_attack(model, device, x, y, eps, atkIter, betaLr):
             # lr=0.005 # Default 0.01
             lr=betaLr
             )
-
+        print(f"Starting class {j}")
         for t in range(atkIter):
+            print(f"Attack iteration {t}")
             perts.requires_grad_()
             pertOptim.zero_grad()
 
@@ -91,11 +92,11 @@ def best_targeted_attack(model, device, x, y, eps, atkIter, betaLr):
         margins = negative_margin(logits, j, y)
         # Extract perturbations with greater margin
         comp = torch.logical_and(
-            torch.gt(margins, maxMargins), 
+            torch.gt(margins, maxMargins),
             torch.ne(y, j))
-        maxMargins[comp] = margins[comp]
-        maxPerts[comp] = perts[comp]
-        maxClasses[comp] = j
+        maxMargins[comp] = margins[comp].detach().clone()
+        maxPerts[comp] = perts[comp].detach().clone()
+        # maxClasses[comp] = j
 
     # maxPerts.requires_grad_(False)
-    return (maxPerts.detach(), margins.detach())
+    return (maxPerts.detach(), maxMargins.detach())
